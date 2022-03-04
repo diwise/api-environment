@@ -14,7 +14,7 @@ import (
 )
 
 type Datastore interface {
-	CreateAirQualityObserved(entityId, deviceId string, co2, humidity, temperature float64, timestamp time.Time) (*models.AirQualityObserved, error)
+	StoreAirQualityObserved(entityId, deviceId string, co2, humidity, temperature float64, timestamp time.Time) (*models.AirQualityObserved, error)
 }
 
 type myDB struct {
@@ -103,7 +103,7 @@ func NewDatabaseConnection(connect ConnectorFunc) (Datastore, error) {
 	return db, nil
 }
 
-func (db *myDB) CreateAirQualityObserved(entityId, deviceId string, co2, humidity, temperature float64, timestamp time.Time) (*models.AirQualityObserved, error) {
+func (db *myDB) StoreAirQualityObserved(entityId, deviceId string, co2, humidity, temperature float64, timestamp time.Time) (*models.AirQualityObserved, error) {
 	aqo := models.AirQualityObserved{}
 
 	result := db.impl.Create(&aqo)

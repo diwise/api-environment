@@ -26,7 +26,7 @@ func NewEnvironmentApp(db database.Datastore, log zerolog.Logger) EnvironmentApp
 }
 
 func (a *app) StoreAirQualityObserved(entityId, deviceId string, co2, humidity, temperature float64, timestamp time.Time) error {
-	_, err := a.db.CreateAirQualityObserved(entityId, deviceId, co2, humidity, temperature, timestamp)
+	_, err := a.db.StoreAirQualityObserved(entityId, deviceId, co2, humidity, temperature, timestamp)
 	if err != nil {
 		return err
 	}
