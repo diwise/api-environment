@@ -8,6 +8,7 @@ import (
 
 type AirQualityObserved struct {
 	gorm.Model
+	EntityId    string
 	DeviceId    string
 	CO2         float64
 	Humidity    float64

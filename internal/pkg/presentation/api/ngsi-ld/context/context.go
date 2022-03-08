@@ -35,6 +35,7 @@ func (cs contextSource) CreateEntity(typeName, entityID string, req ngsi.Request
 	aqo := &fiware.AirQualityObserved{}
 	err := req.DecodeBodyInto(aqo)
 	if err != nil {
+		fmt.Print(err.Error())
 		return err
 	}
 
@@ -43,7 +44,29 @@ func (cs contextSource) CreateEntity(typeName, entityID string, req ngsi.Request
 		return err
 	}
 
-	err = cs.app.StoreAirQualityObserved(aqo.ID, aqo.RefDevice.Object, aqo.CO2.Value, aqo.RelativeHumidity.Value, aqo.Temperature.Value, dateObserved)
+	entityID = strings.TrimPrefix(aqo.ID, fiware.AirQualityObservedIDPrefix)
+
+	refDevice := ""
+	if aqo.RefDevice != nil {
+		refDevice = strings.TrimPrefix(aqo.RefDevice.Object, fiware.DeviceIDPrefix)
+	}
+
+	co2 := 0.0
+	if aqo.CO2 != nil {
+		co2 = aqo.CO2.Value
+	}
+
+	humidity := 0.0
+	if aqo.RelativeHumidity != nil {
+		humidity = aqo.RelativeHumidity.Value
+	}
+
+	temp := 0.0
+	if aqo.Temperature != nil {
+		temp = aqo.Temperature.Value
+	}
+
+	err = cs.app.StoreAirQualityObserved(entityID, refDevice, co2, humidity, temp, dateObserved)
 
 	return err
 }

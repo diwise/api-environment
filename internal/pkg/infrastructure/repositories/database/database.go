@@ -104,7 +104,14 @@ func NewDatabaseConnection(connect ConnectorFunc) (Datastore, error) {
 }
 
 func (db *myDB) StoreAirQualityObserved(entityId, deviceId string, co2, humidity, temperature float64, timestamp time.Time) (*models.AirQualityObserved, error) {
-	aqo := models.AirQualityObserved{}
+	aqo := models.AirQualityObserved{
+		EntityId:    entityId,
+		DeviceId:    deviceId,
+		CO2:         co2,
+		Humidity:    humidity,
+		Temperature: temperature,
+		Timestamp:   timestamp,
+	}
 
 	result := db.impl.Create(&aqo)
 	if result.Error != nil {
