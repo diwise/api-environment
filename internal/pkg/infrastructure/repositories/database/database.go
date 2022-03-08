@@ -14,6 +14,7 @@ import (
 )
 
 type Datastore interface {
+	GetAirQualityObserveds(deviceId string, from, to time.Time, limit uint64) ([]models.AirQualityObserved, error)
 	StoreAirQualityObserved(entityId, deviceId string, co2, humidity, temperature float64, timestamp time.Time) (*models.AirQualityObserved, error)
 }
 
@@ -119,4 +120,42 @@ func (db *myDB) StoreAirQualityObserved(entityId, deviceId string, co2, humidity
 	}
 
 	return &aqo, nil
+}
+
+func (db *myDB) GetAirQualityObserveds(deviceId string, from, to time.Time, limit uint64) ([]models.AirQualityObserved, error) {
+	aqos := []models.AirQualityObserved{}
+	gorm := db.impl.Order("timestamp DESC")
+
+	if deviceId != "" {
+		gorm = gorm.Where("device = ?", deviceId)
+	}
+
+	if !from.IsZero() || !to.IsZero() {
+		gorm = insertTemporalSQL(gorm, "timestamp", from, to)
+		if gorm.Error != nil {
+			return nil, gorm.Error
+		}
+	}
+
+	result := gorm.Limit(int(limit)).Find(&aqos)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return nil, nil
+}
+
+func insertTemporalSQL(gorm *gorm.DB, property string, from, to time.Time) *gorm.DB {
+	if !from.IsZero() {
+		gorm = gorm.Where(fmt.Sprintf("%s >= ?", property), from)
+		if gorm.Error != nil {
+			return gorm
+		}
+	}
+
+	if !to.IsZero() {
+		gorm = gorm.Where(fmt.Sprintf("%s < ?", property), to)
+	}
+
+	return gorm
 }

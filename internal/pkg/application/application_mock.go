@@ -19,7 +19,7 @@ var _ EnvironmentApp = &EnvironmentAppMock{}
 //
 // 		// make and configure a mocked EnvironmentApp
 // 		mockedEnvironmentApp := &EnvironmentAppMock{
-// 			RetrieveAirQualityObservedsFunc: func() ([]models.AirQualityObserved, error) {
+// 			RetrieveAirQualityObservedsFunc: func(deviceId string, from time.Time, to time.Time, limit uint64) ([]models.AirQualityObserved, error) {
 // 				panic("mock out the RetrieveAirQualityObserveds method")
 // 			},
 // 			StoreAirQualityObservedFunc: func(entityId string, deviceId string, co2 float64, humidity float64, temperature float64, timestamp time.Time) error {
@@ -33,7 +33,7 @@ var _ EnvironmentApp = &EnvironmentAppMock{}
 // 	}
 type EnvironmentAppMock struct {
 	// RetrieveAirQualityObservedsFunc mocks the RetrieveAirQualityObserveds method.
-	RetrieveAirQualityObservedsFunc func() ([]models.AirQualityObserved, error)
+	RetrieveAirQualityObservedsFunc func(deviceId string, from time.Time, to time.Time, limit uint64) ([]models.AirQualityObserved, error)
 
 	// StoreAirQualityObservedFunc mocks the StoreAirQualityObserved method.
 	StoreAirQualityObservedFunc func(entityId string, deviceId string, co2 float64, humidity float64, temperature float64, timestamp time.Time) error
@@ -42,6 +42,14 @@ type EnvironmentAppMock struct {
 	calls struct {
 		// RetrieveAirQualityObserveds holds details about calls to the RetrieveAirQualityObserveds method.
 		RetrieveAirQualityObserveds []struct {
+			// DeviceId is the deviceId argument value.
+			DeviceId string
+			// From is the from argument value.
+			From time.Time
+			// To is the to argument value.
+			To time.Time
+			// Limit is the limit argument value.
+			Limit uint64
 		}
 		// StoreAirQualityObserved holds details about calls to the StoreAirQualityObserved method.
 		StoreAirQualityObserved []struct {
@@ -64,24 +72,41 @@ type EnvironmentAppMock struct {
 }
 
 // RetrieveAirQualityObserveds calls RetrieveAirQualityObservedsFunc.
-func (mock *EnvironmentAppMock) RetrieveAirQualityObserveds() ([]models.AirQualityObserved, error) {
+func (mock *EnvironmentAppMock) RetrieveAirQualityObserveds(deviceId string, from time.Time, to time.Time, limit uint64) ([]models.AirQualityObserved, error) {
 	if mock.RetrieveAirQualityObservedsFunc == nil {
 		panic("EnvironmentAppMock.RetrieveAirQualityObservedsFunc: method is nil but EnvironmentApp.RetrieveAirQualityObserveds was just called")
 	}
 	callInfo := struct {
-	}{}
+		DeviceId string
+		From     time.Time
+		To       time.Time
+		Limit    uint64
+	}{
+		DeviceId: deviceId,
+		From:     from,
+		To:       to,
+		Limit:    limit,
+	}
 	mock.lockRetrieveAirQualityObserveds.Lock()
 	mock.calls.RetrieveAirQualityObserveds = append(mock.calls.RetrieveAirQualityObserveds, callInfo)
 	mock.lockRetrieveAirQualityObserveds.Unlock()
-	return mock.RetrieveAirQualityObservedsFunc()
+	return mock.RetrieveAirQualityObservedsFunc(deviceId, from, to, limit)
 }
 
 // RetrieveAirQualityObservedsCalls gets all the calls that were made to RetrieveAirQualityObserveds.
 // Check the length with:
 //     len(mockedEnvironmentApp.RetrieveAirQualityObservedsCalls())
 func (mock *EnvironmentAppMock) RetrieveAirQualityObservedsCalls() []struct {
+	DeviceId string
+	From     time.Time
+	To       time.Time
+	Limit    uint64
 } {
 	var calls []struct {
+		DeviceId string
+		From     time.Time
+		To       time.Time
+		Limit    uint64
 	}
 	mock.lockRetrieveAirQualityObserveds.RLock()
 	calls = mock.calls.RetrieveAirQualityObserveds

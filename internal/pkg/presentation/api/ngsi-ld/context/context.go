@@ -9,6 +9,7 @@ import (
 	"github.com/diwise/api-environment/internal/pkg/application"
 	"github.com/diwise/ngsi-ld-golang/pkg/datamodels/fiware"
 	"github.com/diwise/ngsi-ld-golang/pkg/ngsi-ld"
+	"github.com/diwise/ngsi-ld-golang/pkg/ngsi-ld/types"
 	"github.com/rs/zerolog"
 )
 
@@ -78,13 +79,29 @@ func (cs contextSource) GetEntities(query ngsi.Query, callback ngsi.QueryEntitie
 		return errors.New("GetEntities: query may not be nil")
 	}
 
-	aqos, err := cs.app.RetrieveAirQualityObserveds()
+	deviceId := ""
+	if query.HasDeviceReference() {
+		deviceId = strings.TrimPrefix(query.Device(), fiware.DeviceIDPrefix)
+	}
+
+	from := time.Time{}
+	to := time.Time{}
+	if query.IsTemporalQuery() {
+		from, to = query.Temporal().TimeSpan()
+	}
+
+	limit := query.PaginationLimit()
+
+	aqos, err := cs.app.RetrieveAirQualityObserveds(deviceId, from, to, limit)
 	if err != nil {
 		return err
 	}
 
 	for _, a := range aqos {
 		entity := fiware.NewAirQualityObserved(a.EntityId, a.Latitude, a.Longitude, a.Timestamp.Format(time.RFC3339)).WithCO2(a.CO2).WithRelativeHumidity(a.Humidity).WithTemperature(a.Temperature)
+		if a.DeviceId != "" {
+			entity.RefDevice = types.NewSingleObjectRelationship(a.DeviceId)
+		}
 
 		err = callback(entity)
 		if err != nil {

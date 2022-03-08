@@ -9,7 +9,7 @@ import (
 )
 
 type EnvironmentApp interface {
-	RetrieveAirQualityObserveds() ([]models.AirQualityObserved, error)
+	RetrieveAirQualityObserveds(deviceId string, from, to time.Time, limit uint64) ([]models.AirQualityObserved, error)
 	StoreAirQualityObserved(entityId, deviceId string, co2, humidity, temperature float64, timestamp time.Time) error
 }
 
@@ -35,6 +35,10 @@ func (a *app) StoreAirQualityObserved(entityId, deviceId string, co2, humidity, 
 	return nil
 }
 
-func (a *app) RetrieveAirQualityObserveds() ([]models.AirQualityObserved, error) {
-	return []models.AirQualityObserved{}, nil
+func (a *app) RetrieveAirQualityObserveds(deviceId string, from, to time.Time, limit uint64) ([]models.AirQualityObserved, error) {
+	results, err := a.db.GetAirQualityObserveds(deviceId, from, to, limit)
+	if err != nil {
+		return nil, err
+	}
+	return results, nil
 }

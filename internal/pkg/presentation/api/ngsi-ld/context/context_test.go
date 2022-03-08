@@ -46,8 +46,17 @@ func testSetup(t *testing.T) (*is.I, *application.EnvironmentAppMock, ngsi.Conte
 		StoreAirQualityObservedFunc: func(entityId, deviceId string, co2, humidity, temperature float64, timestamp time.Time) error {
 			return nil
 		},
-		RetrieveAirQualityObservedsFunc: func() ([]models.AirQualityObserved, error) {
-			return nil, nil
+		RetrieveAirQualityObservedsFunc: func(deviceId string, from, to time.Time, limit uint64) ([]models.AirQualityObserved, error) {
+			return []models.AirQualityObserved{
+				{
+					EntityId:    "entityId",
+					DeviceId:    "deviceId",
+					CO2:         20.0,
+					Humidity:    30.0,
+					Temperature: 40.0,
+					Timestamp:   time.Now().UTC(),
+				},
+			}, nil
 		},
 	}
 

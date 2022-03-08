@@ -19,6 +19,9 @@ var _ Datastore = &DatastoreMock{}
 //
 // 		// make and configure a mocked Datastore
 // 		mockedDatastore := &DatastoreMock{
+// 			GetAirQualityObservedsFunc: func(deviceId string, from time.Time, to time.Time, limit uint64) ([]models.AirQualityObserved, error) {
+// 				panic("mock out the GetAirQualityObserveds method")
+// 			},
 // 			StoreAirQualityObservedFunc: func(entityId string, deviceId string, co2 float64, humidity float64, temperature float64, timestamp time.Time) (*models.AirQualityObserved, error) {
 // 				panic("mock out the StoreAirQualityObserved method")
 // 			},
@@ -29,11 +32,25 @@ var _ Datastore = &DatastoreMock{}
 //
 // 	}
 type DatastoreMock struct {
+	// GetAirQualityObservedsFunc mocks the GetAirQualityObserveds method.
+	GetAirQualityObservedsFunc func(deviceId string, from time.Time, to time.Time, limit uint64) ([]models.AirQualityObserved, error)
+
 	// StoreAirQualityObservedFunc mocks the StoreAirQualityObserved method.
 	StoreAirQualityObservedFunc func(entityId string, deviceId string, co2 float64, humidity float64, temperature float64, timestamp time.Time) (*models.AirQualityObserved, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
+		// GetAirQualityObserveds holds details about calls to the GetAirQualityObserveds method.
+		GetAirQualityObserveds []struct {
+			// DeviceId is the deviceId argument value.
+			DeviceId string
+			// From is the from argument value.
+			From time.Time
+			// To is the to argument value.
+			To time.Time
+			// Limit is the limit argument value.
+			Limit uint64
+		}
 		// StoreAirQualityObserved holds details about calls to the StoreAirQualityObserved method.
 		StoreAirQualityObserved []struct {
 			// EntityId is the entityId argument value.
@@ -50,7 +67,51 @@ type DatastoreMock struct {
 			Timestamp time.Time
 		}
 	}
+	lockGetAirQualityObserveds  sync.RWMutex
 	lockStoreAirQualityObserved sync.RWMutex
+}
+
+// GetAirQualityObserveds calls GetAirQualityObservedsFunc.
+func (mock *DatastoreMock) GetAirQualityObserveds(deviceId string, from time.Time, to time.Time, limit uint64) ([]models.AirQualityObserved, error) {
+	if mock.GetAirQualityObservedsFunc == nil {
+		panic("DatastoreMock.GetAirQualityObservedsFunc: method is nil but Datastore.GetAirQualityObserveds was just called")
+	}
+	callInfo := struct {
+		DeviceId string
+		From     time.Time
+		To       time.Time
+		Limit    uint64
+	}{
+		DeviceId: deviceId,
+		From:     from,
+		To:       to,
+		Limit:    limit,
+	}
+	mock.lockGetAirQualityObserveds.Lock()
+	mock.calls.GetAirQualityObserveds = append(mock.calls.GetAirQualityObserveds, callInfo)
+	mock.lockGetAirQualityObserveds.Unlock()
+	return mock.GetAirQualityObservedsFunc(deviceId, from, to, limit)
+}
+
+// GetAirQualityObservedsCalls gets all the calls that were made to GetAirQualityObserveds.
+// Check the length with:
+//     len(mockedDatastore.GetAirQualityObservedsCalls())
+func (mock *DatastoreMock) GetAirQualityObservedsCalls() []struct {
+	DeviceId string
+	From     time.Time
+	To       time.Time
+	Limit    uint64
+} {
+	var calls []struct {
+		DeviceId string
+		From     time.Time
+		To       time.Time
+		Limit    uint64
+	}
+	mock.lockGetAirQualityObserveds.RLock()
+	calls = mock.calls.GetAirQualityObserveds
+	mock.lockGetAirQualityObserveds.RUnlock()
+	return calls
 }
 
 // StoreAirQualityObserved calls StoreAirQualityObservedFunc.
