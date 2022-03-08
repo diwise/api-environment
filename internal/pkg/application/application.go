@@ -4,10 +4,12 @@ import (
 	"time"
 
 	"github.com/diwise/api-environment/internal/pkg/infrastructure/repositories/database"
+	"github.com/diwise/api-environment/internal/pkg/infrastructure/repositories/models"
 	"github.com/rs/zerolog"
 )
 
 type EnvironmentApp interface {
+	RetrieveAirQualityObserveds() ([]models.AirQualityObserved, error)
 	StoreAirQualityObserved(entityId, deviceId string, co2, humidity, temperature float64, timestamp time.Time) error
 }
 
@@ -31,4 +33,8 @@ func (a *app) StoreAirQualityObserved(entityId, deviceId string, co2, humidity, 
 		return err
 	}
 	return nil
+}
+
+func (a *app) RetrieveAirQualityObserveds() ([]models.AirQualityObserved, error) {
+	return []models.AirQualityObserved{}, nil
 }

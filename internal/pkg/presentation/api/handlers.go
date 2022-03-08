@@ -39,7 +39,7 @@ func RegisterHandlers(r chi.Router, app application.EnvironmentApp, log zerolog.
 	ctxReg := createContextRegistry(app, log)
 
 	r.Post("/ngsi-ld/v1/entities", ngsi.NewCreateEntityHandler(ctxReg))
-	//r.Get("/ngsi-ld/v1/entities", ngsi.NewQueryEntitiesHandler(ctxReg))
+	r.Get("/ngsi-ld/v1/entities", ngsi.NewQueryEntitiesHandler(ctxReg))
 
 	return nil
 }

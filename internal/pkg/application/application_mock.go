@@ -4,6 +4,7 @@
 package application
 
 import (
+	"github.com/diwise/api-environment/internal/pkg/infrastructure/repositories/models"
 	"sync"
 	"time"
 )
@@ -18,6 +19,9 @@ var _ EnvironmentApp = &EnvironmentAppMock{}
 //
 // 		// make and configure a mocked EnvironmentApp
 // 		mockedEnvironmentApp := &EnvironmentAppMock{
+// 			RetrieveAirQualityObservedsFunc: func() ([]models.AirQualityObserved, error) {
+// 				panic("mock out the RetrieveAirQualityObserveds method")
+// 			},
 // 			StoreAirQualityObservedFunc: func(entityId string, deviceId string, co2 float64, humidity float64, temperature float64, timestamp time.Time) error {
 // 				panic("mock out the StoreAirQualityObserved method")
 // 			},
@@ -28,11 +32,17 @@ var _ EnvironmentApp = &EnvironmentAppMock{}
 //
 // 	}
 type EnvironmentAppMock struct {
+	// RetrieveAirQualityObservedsFunc mocks the RetrieveAirQualityObserveds method.
+	RetrieveAirQualityObservedsFunc func() ([]models.AirQualityObserved, error)
+
 	// StoreAirQualityObservedFunc mocks the StoreAirQualityObserved method.
 	StoreAirQualityObservedFunc func(entityId string, deviceId string, co2 float64, humidity float64, temperature float64, timestamp time.Time) error
 
 	// calls tracks calls to the methods.
 	calls struct {
+		// RetrieveAirQualityObserveds holds details about calls to the RetrieveAirQualityObserveds method.
+		RetrieveAirQualityObserveds []struct {
+		}
 		// StoreAirQualityObserved holds details about calls to the StoreAirQualityObserved method.
 		StoreAirQualityObserved []struct {
 			// EntityId is the entityId argument value.
@@ -49,7 +59,34 @@ type EnvironmentAppMock struct {
 			Timestamp time.Time
 		}
 	}
-	lockStoreAirQualityObserved sync.RWMutex
+	lockRetrieveAirQualityObserveds sync.RWMutex
+	lockStoreAirQualityObserved     sync.RWMutex
+}
+
+// RetrieveAirQualityObserveds calls RetrieveAirQualityObservedsFunc.
+func (mock *EnvironmentAppMock) RetrieveAirQualityObserveds() ([]models.AirQualityObserved, error) {
+	if mock.RetrieveAirQualityObservedsFunc == nil {
+		panic("EnvironmentAppMock.RetrieveAirQualityObservedsFunc: method is nil but EnvironmentApp.RetrieveAirQualityObserveds was just called")
+	}
+	callInfo := struct {
+	}{}
+	mock.lockRetrieveAirQualityObserveds.Lock()
+	mock.calls.RetrieveAirQualityObserveds = append(mock.calls.RetrieveAirQualityObserveds, callInfo)
+	mock.lockRetrieveAirQualityObserveds.Unlock()
+	return mock.RetrieveAirQualityObservedsFunc()
+}
+
+// RetrieveAirQualityObservedsCalls gets all the calls that were made to RetrieveAirQualityObserveds.
+// Check the length with:
+//     len(mockedEnvironmentApp.RetrieveAirQualityObservedsCalls())
+func (mock *EnvironmentAppMock) RetrieveAirQualityObservedsCalls() []struct {
+} {
+	var calls []struct {
+	}
+	mock.lockRetrieveAirQualityObserveds.RLock()
+	calls = mock.calls.RetrieveAirQualityObserveds
+	mock.lockRetrieveAirQualityObserveds.RUnlock()
+	return calls
 }
 
 // StoreAirQualityObserved calls StoreAirQualityObservedFunc.

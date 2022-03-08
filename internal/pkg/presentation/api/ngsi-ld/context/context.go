@@ -72,7 +72,27 @@ func (cs contextSource) CreateEntity(typeName, entityID string, req ngsi.Request
 }
 
 func (cs contextSource) GetEntities(query ngsi.Query, callback ngsi.QueryEntitiesCallback) error {
-	return errors.New("not implemented yet")
+	var err error
+
+	if query == nil {
+		return errors.New("GetEntities: query may not be nil")
+	}
+
+	aqos, err := cs.app.RetrieveAirQualityObserveds()
+	if err != nil {
+		return err
+	}
+
+	for _, a := range aqos {
+		entity := fiware.NewAirQualityObserved(a.EntityId, a.Latitude, a.Longitude, a.Timestamp.Format(time.RFC3339)).WithCO2(a.CO2).WithRelativeHumidity(a.Humidity).WithTemperature(a.Temperature)
+
+		err = callback(entity)
+		if err != nil {
+			break
+		}
+	}
+
+	return err
 }
 
 func (cs contextSource) GetProvidedTypeFromID(entityID string) (string, error) {
