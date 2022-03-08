@@ -23,7 +23,6 @@ func TestStoreAirQualityObserved(t *testing.T) {
 
 	is.Equal(w.Code, http.StatusCreated)
 	is.Equal(len(app.StoreAirQualityObservedCalls()), 1)
-
 }
 
 func testSetup(t *testing.T) (*is.I, *application.EnvironmentAppMock, ngsi.ContextRegistry) {

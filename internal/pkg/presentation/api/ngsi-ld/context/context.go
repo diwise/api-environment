@@ -44,7 +44,7 @@ func (cs contextSource) CreateEntity(typeName, entityID string, req ngsi.Request
 		return err
 	}
 
-	entityID = strings.TrimPrefix(aqo.ID, fiware.AirQualityObservedIDPrefix)
+	entity := strings.TrimPrefix(aqo.ID, fiware.AirQualityObservedIDPrefix)
 
 	refDevice := ""
 	if aqo.RefDevice != nil {
@@ -66,7 +66,7 @@ func (cs contextSource) CreateEntity(typeName, entityID string, req ngsi.Request
 		temp = aqo.Temperature.Value
 	}
 
-	err = cs.app.StoreAirQualityObserved(entityID, refDevice, co2, humidity, temp, dateObserved)
+	err = cs.app.StoreAirQualityObserved(entity, refDevice, co2, humidity, temp, dateObserved)
 
 	return err
 }
