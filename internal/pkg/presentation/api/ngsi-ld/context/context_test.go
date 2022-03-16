@@ -71,10 +71,8 @@ const aqoJson string = `{
     "id": "urn:ngsi-ld:AirQualityObserved:Madrid-AmbientObserved-28079004-2016-03-15T11:00:00",
     "type": "AirQualityObserved",
     "dateObserved": {
-        "value": {
-			"@type": "Property",
-        	"@value": "2016-03-15T11:00:00Z"
-		}
+		"type": "Property",
+		"value": "2016-03-15T11:00:00Z"
     },
     "temperature": {
         "type": "Property",

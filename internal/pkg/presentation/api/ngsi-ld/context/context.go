@@ -36,11 +36,10 @@ func (cs contextSource) CreateEntity(typeName, entityID string, req ngsi.Request
 	aqo := &fiware.AirQualityObserved{}
 	err := req.DecodeBodyInto(aqo)
 	if err != nil {
-		fmt.Print(err.Error())
 		return err
 	}
 
-	dateObserved, err := time.Parse(time.RFC3339, aqo.DateObserved.Value.Value)
+	dateObserved, err := time.Parse(time.RFC3339, aqo.DateObserved.Value)
 	if err != nil {
 		return err
 	}

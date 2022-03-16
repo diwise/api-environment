@@ -142,7 +142,7 @@ func (db *myDB) GetAirQualityObserveds(deviceId string, from, to time.Time, limi
 		return nil, result.Error
 	}
 
-	return nil, nil
+	return aqos, nil
 }
 
 func insertTemporalSQL(gorm *gorm.DB, property string, from, to time.Time) *gorm.DB {
