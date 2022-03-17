@@ -32,7 +32,7 @@ func (a *app) StoreAirQualityObserved(entityId, deviceId string, co2, humidity, 
 	if err != nil {
 		return err
 	}
-	return nil
+	return err
 }
 
 func (a *app) RetrieveAirQualityObserveds(deviceId string, from, to time.Time, limit uint64) ([]models.AirQualityObserved, error) {
@@ -40,5 +40,5 @@ func (a *app) RetrieveAirQualityObserveds(deviceId string, from, to time.Time, l
 	if err != nil {
 		return nil, err
 	}
-	return results, nil
+	return results, err
 }

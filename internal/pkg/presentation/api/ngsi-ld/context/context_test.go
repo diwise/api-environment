@@ -41,7 +41,6 @@ func TestRetrieveAirQualityObserveds(t *testing.T) {
 func testSetup(t *testing.T) (*is.I, *application.EnvironmentAppMock, ngsi.ContextRegistry) {
 	is := is.New(t)
 
-	log := log.Logger
 	app := &application.EnvironmentAppMock{
 		StoreAirQualityObservedFunc: func(entityId, deviceId string, co2, humidity, temperature float64, timestamp time.Time) error {
 			return nil
@@ -61,7 +60,7 @@ func testSetup(t *testing.T) (*is.I, *application.EnvironmentAppMock, ngsi.Conte
 	}
 
 	ctxReg := ngsi.NewContextRegistry()
-	ctxSource := CreateSource(app, log)
+	ctxSource := CreateSource(app, log.Logger)
 	ctxReg.Register(ctxSource)
 
 	return is, app, ctxReg

@@ -99,7 +99,7 @@ func (cs contextSource) GetEntities(query ngsi.Query, callback ngsi.QueryEntitie
 	for _, a := range aqos {
 		entity := fiware.NewAirQualityObserved(a.EntityId, a.Latitude, a.Longitude, a.Timestamp.Format(time.RFC3339)).WithCO2(a.CO2).WithRelativeHumidity(a.Humidity).WithTemperature(a.Temperature)
 		if a.DeviceId != "" {
-			entity.RefDevice = types.NewSingleObjectRelationship(a.DeviceId)
+			entity.RefDevice = types.NewSingleObjectRelationship(fiware.DeviceIDPrefix + a.DeviceId)
 		}
 
 		err = callback(entity)
@@ -120,7 +120,7 @@ func (cs contextSource) GetProvidedTypeFromID(entityID string) (string, error) {
 }
 
 func (cs contextSource) ProvidesAttribute(attributeName string) bool {
-	return attributeName == "airquality"
+	return false
 }
 
 func (cs contextSource) ProvidesEntitiesWithMatchingID(entityID string) bool {

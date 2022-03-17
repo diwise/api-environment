@@ -29,8 +29,7 @@ func TestThatGetEntitiesReturnsAllStoredAirQualityObserveds(t *testing.T) {
 
 func setupTest(t *testing.T) (*is.I, Datastore) {
 	is := is.New(t)
-	log := log.Logger
-	db, err := NewDatabaseConnection(NewSQLiteConnector(log))
+	db, err := NewDatabaseConnection(NewSQLiteConnector(log.Logger))
 	is.NoErr(err) // error when creating new database connection
 
 	return is, db

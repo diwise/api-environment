@@ -17,9 +17,7 @@ func newAppForTesting() (*database.DatastoreMock, EnvironmentApp) {
 		},
 	}
 
-	log := log.Logger
-
-	return db, NewEnvironmentApp(db, log)
+	return db, NewEnvironmentApp(db, log.Logger)
 }
 
 func TestStoreAirQuality(t *testing.T) {
